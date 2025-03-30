@@ -10,11 +10,6 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, ['localhost', '127.0.0.1']),
     SITE_URL=(str, 'http://localhost:8000'),
     SITE_NAME=(str, 'UGC Automation Platform'),
-    DB_NAME=(str, ''),
-    DB_USER=(str, ''),
-    DB_PASSWORD=(str, ''),
-    DB_HOST=(str, ''),
-    DB_PORT=(int, 5432),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -172,13 +167,16 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-# Celery settings
-CELERY_BROKER_URL = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}/{env('REDIS_DB')}"
-CELERY_RESULT_BACKEND = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}/{env('REDIS_DB')}"
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE
+# Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': os.getenv('REDIS_URL', 'redis://localhost:6379/1'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
@@ -262,3 +260,7 @@ SITE_NAME = 'UGC Automation Platform'
 # Site URL for email verification
 SITE_URL = 'http://127.0.0.1:8000'  # Development
 # SITE_URL = 'https://yourdomain.com'  # Production 
+
+# AI Service Settings
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+GOOGLE_VISION_API_KEY = os.getenv('GOOGLE_VISION_API_KEY', '') 

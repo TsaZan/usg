@@ -1,22 +1,21 @@
 from django import forms
 from django.utils import timezone
-from .models import Content, ContentCategory, ContentTag
+from .models import Content, Category, Tag
 
 class ContentForm(forms.ModelForm):
     class Meta:
         model = Content
-        fields = ['title', 'description', 'content', 'platform', 'category', 'tags', 'media_file', 'scheduled_date']
+        fields = ['title', 'description', 'content_type', 'platform', 'category', 'tags', 'media_file', 'scheduled_for']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),
-            'content': forms.Textarea(attrs={'rows': 10}),
-            'scheduled_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'scheduled_for': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
 
-    def clean_scheduled_date(self):
-        scheduled_date = self.cleaned_data.get('scheduled_date')
-        if scheduled_date and scheduled_date < timezone.now():
+    def clean_scheduled_for(self):
+        scheduled_for = self.cleaned_data.get('scheduled_for')
+        if scheduled_for and scheduled_for < timezone.now():
             raise forms.ValidationError("Scheduled date cannot be in the past.")
-        return scheduled_date
+        return scheduled_for
 
     def clean_media_file(self):
         media_file = self.cleaned_data.get('media_file')
@@ -31,18 +30,18 @@ class ContentForm(forms.ModelForm):
                 raise forms.ValidationError("Invalid file type. Allowed types: JPEG, PNG, GIF, MP4.")
         return media_file
 
-class ContentCategoryForm(forms.ModelForm):
+class CategoryForm(forms.ModelForm):
     class Meta:
-        model = ContentCategory
-        fields = ['name', 'description']
+        model = Category
+        fields = ['name', 'slug', 'description', 'parent']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),
         }
 
-class ContentTagForm(forms.ModelForm):
+class TagForm(forms.ModelForm):
     class Meta:
-        model = ContentTag
-        fields = ['name']
+        model = Tag
+        fields = ['name', 'slug']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'})
         } 

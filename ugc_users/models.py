@@ -26,21 +26,35 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, username, password, **extra_fields)
 
 class User(AbstractUser):
-    """Custom user model for UGC Automation Platform."""
-    
-    # Additional fields
+    class Roles(models.TextChoices):
+        ADMIN = 'ADMIN', _('Administrator')
+        MANAGER = 'MANAGER', _('Content Manager')
+        ANALYST = 'ANALYST', _('Content Analyst')
+        USER = 'USER', _('Regular User')
+
+    # Custom fields
+    role = models.CharField(
+        max_length=10,
+        choices=Roles.choices,
+        default=Roles.USER
+    )
     bio = models.TextField(max_length=500, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     company = models.CharField(max_length=100, blank=True)
-    website = models.URLField(max_length=200, blank=True)
+    position = models.CharField(max_length=100, blank=True)
     
-    # Social media fields
-    instagram_username = models.CharField(max_length=30, blank=True)
-    facebook_username = models.CharField(max_length=50, blank=True)
-    tiktok_username = models.CharField(max_length=30, blank=True)
+    # Social media integration fields
+    instagram_token = models.CharField(max_length=255, blank=True)
+    tiktok_token = models.CharField(max_length=255, blank=True)
+    facebook_token = models.CharField(max_length=255, blank=True)
     
-    # Settings
+    # Preferences
     email_notifications = models.BooleanField(default=True)
-    push_notifications = models.BooleanField(default=True)
+    content_approval_required = models.BooleanField(default=True)
+    
+    # Analytics
+    last_login_ip = models.GenericIPAddressField(null=True, blank=True)
+    login_count = models.PositiveIntegerField(default=0)
     
     # User fields
     email = models.EmailField(_('email address'), unique=True)
@@ -57,12 +71,12 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['email']
 
     class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        verbose_name = _('User')
+        verbose_name_plural = _('Users')
         ordering = ['-date_joined']
 
     def __str__(self):
-        return self.username
+        return f"{self.username} ({self.get_role_display()})"
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
@@ -108,3 +122,18 @@ class User(AbstractUser):
             self.save()
             return True
         return False
+
+    def has_social_media_connected(self):
+        """Check if user has connected any social media accounts"""
+        return bool(self.instagram_token or self.tiktok_token or self.facebook_token)
+        
+    def get_social_media_connections(self):
+        """Return list of connected social media platforms"""
+        connections = []
+        if self.instagram_token:
+            connections.append('instagram')
+        if self.tiktok_token:
+            connections.append('tiktok')
+        if self.facebook_token:
+            connections.append('facebook')
+        return connections

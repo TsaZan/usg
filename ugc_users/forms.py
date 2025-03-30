@@ -34,20 +34,16 @@ class UserRegistrationForm(UserCreationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'bio', 'company', 'website',
-                 'instagram_username', 'facebook_username', 'tiktok_username',
-                 'email_notifications', 'push_notifications', 'avatar')
+        fields = ('first_name', 'last_name', 'bio', 'company', 'position',
+                 'email_notifications', 'content_approval_required', 'avatar')
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'company': forms.TextInput(attrs={'class': 'form-control'}),
-            'website': forms.URLInput(attrs={'class': 'form-control'}),
-            'instagram_username': forms.TextInput(attrs={'class': 'form-control'}),
-            'facebook_username': forms.TextInput(attrs={'class': 'form-control'}),
-            'tiktok_username': forms.TextInput(attrs={'class': 'form-control'}),
+            'position': forms.TextInput(attrs={'class': 'form-control'}),
             'email_notifications': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'push_notifications': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'content_approval_required': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'avatar': forms.FileInput(attrs={'class': 'form-control'}),
         }
 

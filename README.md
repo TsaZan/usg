@@ -105,3 +105,79 @@ usg/
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## AI Service Setup
+
+The UGC Platform includes an AI service that provides content analysis, recommendations, and detection capabilities. The service uses OpenAI's GPT-4 for text analysis and Google Cloud Vision API for media analysis.
+
+### Prerequisites
+
+1. OpenAI API Key
+2. Google Cloud Vision API Key
+3. Redis (for Celery and caching)
+
+### Environment Variables
+
+Add the following environment variables to your `.env` file:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+GOOGLE_VISION_API_KEY=your_google_vision_api_key
+REDIS_URL=redis://localhost:6379/0
+```
+
+### Running Celery
+
+The AI service uses Celery for background task processing. To start the Celery worker and beat scheduler:
+
+```bash
+python start_celery.py
+```
+
+This will start:
+- A Celery worker with 4 concurrent processes
+- A Celery beat scheduler for periodic tasks
+
+### API Endpoints
+
+The AI service provides the following API endpoints:
+
+#### Content Analysis
+- `POST /api/ai/analyses/` - Start content analysis
+- `GET /api/ai/analyses/{id}/` - Get analysis details
+- `GET /api/ai/analyses/{id}/status/` - Get analysis status
+
+#### Content Recommendations
+- `POST /api/ai/recommendations/` - Generate recommendations
+- `GET /api/ai/recommendations/` - List recommendations
+- `GET /api/ai/recommendations/personalized/` - Get personalized recommendations
+
+#### Content Detection
+- `POST /api/ai/detections/` - Start content detection
+- `GET /api/ai/detections/{id}/` - Get detection details
+- `GET /api/ai/detections/{id}/status/` - Get detection status
+
+### Background Tasks
+
+The following background tasks are automatically scheduled:
+
+1. Content Analysis Cleanup (daily)
+   - Removes analyses older than 30 days
+
+2. Recommendation Cleanup (daily)
+   - Removes recommendations older than 7 days
+
+### Error Handling
+
+The AI service includes comprehensive error handling:
+- API rate limiting
+- Network timeouts
+- Invalid API responses
+- Task retries for failed operations
+
+### Monitoring
+
+Monitor the AI service through:
+- Celery Flower (task monitoring)
+- Django admin interface
+- Application logs
+

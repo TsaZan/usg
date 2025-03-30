@@ -5,8 +5,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import Content, ContentCategory, ContentTag
-from .forms import ContentForm, ContentCategoryForm, ContentTagForm
+from .models import Content, Category, Tag
+from .forms import ContentForm, CategoryForm, TagForm
 from django.utils import timezone
 
 @login_required
@@ -31,7 +31,7 @@ def dashboard(request):
     }
     
     # Get content by category
-    category_stats = ContentCategory.objects.annotate(
+    category_stats = Category.objects.annotate(
         content_count=Count('content')
     ).values('name', 'content_count')
     
@@ -98,7 +98,7 @@ def content_list(request):
     
     context = {
         'contents': contents,
-        'categories': ContentCategory.objects.all(),
+        'categories': Category.objects.all(),
         'platforms': dict(Content.PLATFORM_CHOICES),
         'statuses': dict(Content.STATUS_CHOICES),
     }
@@ -186,39 +186,39 @@ def content_archive(request, pk):
 
 @login_required
 def category_list(request):
-    categories = ContentCategory.objects.all()
+    categories = Category.objects.all()
     return render(request, 'content/category_list.html', {'categories': categories})
 
 @login_required
 def category_create(request):
     if request.method == 'POST':
-        form = ContentCategoryForm(request.POST)
+        form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Category created successfully!')
             return redirect('content:category_list')
     else:
-        form = ContentCategoryForm()
+        form = CategoryForm()
     
     return render(request, 'content/category_form.html', {'form': form})
 
 @login_required
 def category_update(request, pk):
-    category = get_object_or_404(ContentCategory, pk=pk)
+    category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
-        form = ContentCategoryForm(request.POST, instance=category)
+        form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
             messages.success(request, 'Category updated successfully!')
             return redirect('content:category_list')
     else:
-        form = ContentCategoryForm(instance=category)
+        form = CategoryForm(instance=category)
     
     return render(request, 'content/category_form.html', {'form': form, 'category': category})
 
 @login_required
 def category_delete(request, pk):
-    category = get_object_or_404(ContentCategory, pk=pk)
+    category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
         category.delete()
         messages.success(request, 'Category deleted successfully!')
@@ -228,39 +228,39 @@ def category_delete(request, pk):
 
 @login_required
 def tag_list(request):
-    tags = ContentTag.objects.all()
+    tags = Tag.objects.all()
     return render(request, 'content/tag_list.html', {'tags': tags})
 
 @login_required
 def tag_create(request):
     if request.method == 'POST':
-        form = ContentTagForm(request.POST)
+        form = TagForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Tag created successfully!')
             return redirect('content:tag_list')
     else:
-        form = ContentTagForm()
+        form = TagForm()
     
     return render(request, 'content/tag_form.html', {'form': form})
 
 @login_required
 def tag_update(request, pk):
-    tag = get_object_or_404(ContentTag, pk=pk)
+    tag = get_object_or_404(Tag, pk=pk)
     if request.method == 'POST':
-        form = ContentTagForm(request.POST, instance=tag)
+        form = TagForm(request.POST, instance=tag)
         if form.is_valid():
             form.save()
             messages.success(request, 'Tag updated successfully!')
             return redirect('content:tag_list')
     else:
-        form = ContentTagForm(instance=tag)
+        form = TagForm(instance=tag)
     
     return render(request, 'content/tag_form.html', {'form': form, 'tag': tag})
 
 @login_required
 def tag_delete(request, pk):
-    tag = get_object_or_404(ContentTag, pk=pk)
+    tag = get_object_or_404(Tag, pk=pk)
     if request.method == 'POST':
         tag.delete()
         messages.success(request, 'Tag deleted successfully!')

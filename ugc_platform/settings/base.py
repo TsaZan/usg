@@ -12,16 +12,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',
+    'django.contrib.sites',  # Required for email verification
     
     # Third party apps
     'rest_framework',
     'corsheaders',
-    'django_celery_beat',
-    'django_celery_results',
     
     # Local apps
-    'ugc_users',
+    'ugc_users.apps.UgcUsersConfig',
     'ugc_content',
     'ugc_social',
     'ugc_ai',
