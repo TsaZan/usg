@@ -2,7 +2,7 @@ app = "usg-platform"
 primary_region = "lhr"  # London region, change as needed
 
 [build]
-  image = "usg-platform"
+  builder = "paketobuildpacks/builder:base"
 
 [env]
   PYTHONUNBUFFERED = "1"
