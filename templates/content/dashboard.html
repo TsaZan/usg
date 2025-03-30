@@ -1,0 +1,218 @@
+{% extends 'content/base_content.html' %}
+{% load static %}
+
+{% block content_title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content_body %}
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Content</h5>
+                <h2 class="mb-0">{{ total_content }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">Drafts</h5>
+                <h2 class="mb-0">{{ draft_content }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Scheduled</h5>
+                <h2 class="mb-0">{{ scheduled_content }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Published</h5>
+                <h2 class="mb-0">{{ published_content }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Content -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Content</h5>
+                <a href="{% url 'content:content_create' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Create Content
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_content %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Platform</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for content in recent_content %}
+                            <tr>
+                                <td>{{ content.title }}</td>
+                                <td>
+                                    <i class="fab fa-{{ content.platform }} text-primary"></i>
+                                    {{ content.get_platform_display }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ content.status }}">
+                                        {{ content.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ content.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'content:content_detail' content.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'content:content_update' content.pk %}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No content found. <a href="{% url 'content:content_create' %}" class="alert-link">Create some content</a> to get started!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Upcoming Scheduled Content -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Upcoming Scheduled Content</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_content %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Platform</th>
+                                <th>Scheduled Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for content in upcoming_content %}
+                            <tr>
+                                <td>{{ content.title }}</td>
+                                <td>
+                                    <i class="fab fa-{{ content.platform }} text-primary"></i>
+                                    {{ content.get_platform_display }}
+                                </td>
+                                <td>{{ content.scheduled_date|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'content:content_detail' content.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'content:content_update' content.pk %}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No upcoming scheduled content.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Sidebar -->
+    <div class="col-md-4">
+        <!-- Platform Statistics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Content by Platform</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for platform, count in platform_stats.items %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fab fa-{{ platform }} text-primary"></i>
+                            {{ platform|title }}
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Statistics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Content by Category</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for category in category_stats %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-folder text-primary"></i>
+                            {{ category.name }}
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ category.content_count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'content:content_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create New Content
+                    </a>
+                    <a href="{% url 'content:category_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-folder"></i> Manage Categories
+                    </a>
+                    <a href="{% url 'content:tag_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-tags"></i> Manage Tags
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

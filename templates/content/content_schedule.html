@@ -1,0 +1,116 @@
+{% extends 'content/base_content.html' %}
+{% load static %}
+
+{% block content_title %}Schedule Content{% endblock %}
+
+{% block page_title %}Schedule Content{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Scheduled Date -->
+                    <div class="mb-3">
+                        <label for="{{ form.scheduled_date.id_for_label }}" class="form-label">Schedule Date</label>
+                        {{ form.scheduled_date }}
+                        {% if form.scheduled_date.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.scheduled_date.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Select the date and time when you want this content to be published.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'content:content_detail' content.pk %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Schedule Content</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Content Preview Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Content Preview</h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ content.title }}</h5>
+                {% if content.description %}
+                <p class="card-text text-muted">{{ content.description }}</p>
+                {% endif %}
+                {% if content.media_file %}
+                <div class="mb-3">
+                    {% if content.media_file.name|lower|slice:"-4:" in '.jpg,.png,.gif'|split:',' %}
+                    <img src="{{ content.media_file.url }}" class="img-fluid" alt="{{ content.title }}">
+                    {% else %}
+                    <video src="{{ content.media_file.url }}" class="img-fluid" controls></video>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <p class="card-text">{{ content.content|truncatewords:50 }}</p>
+            </div>
+        </div>
+
+        <!-- Scheduling Tips Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Scheduling Tips</h5>
+            </div>
+            <div class="card-body">
+                <h6>Best Times to Post</h6>
+                <ul class="list-unstyled mb-3">
+                    <li><i class="fab fa-instagram"></i> Instagram: 9:00 AM - 11:00 AM</li>
+                    <li><i class="fab fa-tiktok"></i> TikTok: 6:00 PM - 9:00 PM</li>
+                    <li><i class="fab fa-facebook"></i> Facebook: 1:00 PM - 4:00 PM</li>
+                </ul>
+
+                <h6>Platform-Specific Tips</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check-circle text-success"></i> Consider time zones</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Avoid posting too frequently</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Test different posting times</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Monitor engagement patterns</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %} 

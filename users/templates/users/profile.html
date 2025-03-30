@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - UGC Automation Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+.profile-header {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+    padding: 3rem 0;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
+}
+
+.nav-pills .nav-link {
+    color: var(--bs-gray-700);
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--bs-primary);
+}
+
+.social-account-card {
+    transition: transform 0.2s;
+}
+
+.social-account-card:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center text-md-start">
+                <img src="{{ user.profile.avatar.url|default:'/static/img/default-avatar.png' }}" 
+                     alt="{{ user.get_full_name }}" 
+                     class="profile-avatar mb-3">
+            </div>
+            <div class="col-md-9">
+                <h1 class="display-4 mb-0">{{ user.get_full_name }}</h1>
+                <p class="lead mb-3">@{{ user.username }}</p>
+                <p class="mb-0">
+                    <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row">
+        <!-- Profile Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="nav flex-column nav-pills">
+                        <a class="nav-link active" href="#personal-info" data-bs-toggle="pill">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </a>
+                        <a class="nav-link" href="#social-accounts" data-bs-toggle="pill">
+                            <i class="fas fa-share-nodes me-2"></i>Connected Accounts
+                        </a>
+                        <a class="nav-link" href="#preferences" data-bs-toggle="pill">
+                            <i class="fas fa-gear me-2"></i>Preferences
+                        </a>
+                        <a class="nav-link" href="#security" data-bs-toggle="pill">
+                            <i class="fas fa-shield-halved me-2"></i>Security
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Personal Information -->
+                <div class="tab-pane fade show active" id="personal-info">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Personal Information</h3>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="first_name" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bio" class="form-label">Bio</label>
+                                    <textarea class="form-control" id="bio" name="bio" rows="3">{{ user.profile.bio }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="avatar" class="form-label">Profile Picture</label>
+                                    <input type="file" class="form-control" id="avatar" name="avatar">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connected Social Accounts -->
+                <div class="tab-pane fade" id="social-accounts">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Connected Social Accounts</h3>
+                            <div class="row g-4">
+                                <!-- Facebook -->
+                                <div class="col-md-6">
+                                    <div class="card social-account-card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fab fa-facebook fa-2x text-primary me-3"></i>
+                                                <h5 class="card-title mb-0">Facebook</h5>
+                                            </div>
+                                            {% if facebook_account %}
+                                                <p class="text-muted mb-3">Connected as {{ facebook_account.name }}</p>
+                                                <a href="{% url 'social:disconnect' 'facebook' %}" class="btn btn-outline-danger">Disconnect</a>
+                                            {% else %}
+                                                <p class="text-muted mb-3">Not connected</p>
+                                                <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-outline-primary">Connect</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Instagram -->
+                                <div class="col-md-6">
+                                    <div class="card social-account-card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fab fa-instagram fa-2x text-danger me-3"></i>
+                                                <h5 class="card-title mb-0">Instagram</h5>
+                                            </div>
+                                            {% if instagram_account %}
+                                                <p class="text-muted mb-3">Connected as {{ instagram_account.name }}</p>
+                                                <a href="{% url 'social:disconnect' 'instagram' %}" class="btn btn-outline-danger">Disconnect</a>
+                                            {% else %}
+                                                <p class="text-muted mb-3">Not connected</p>
+                                                <a href="{% url 'social:begin' 'instagram' %}" class="btn btn-outline-primary">Connect</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TikTok -->
+                                <div class="col-md-6">
+                                    <div class="card social-account-card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fab fa-tiktok fa-2x text-dark me-3"></i>
+                                                <h5 class="card-title mb-0">TikTok</h5>
+                                            </div>
+                                            {% if tiktok_account %}
+                                                <p class="text-muted mb-3">Connected as {{ tiktok_account.name }}</p>
+                                                <a href="{% url 'social:disconnect' 'tiktok' %}" class="btn btn-outline-danger">Disconnect</a>
+                                            {% else %}
+                                                <p class="text-muted mb-3">Not connected</p>
+                                                <a href="{% url 'social:begin' 'tiktok' %}" class="btn btn-outline-primary">Connect</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- YouTube -->
+                                <div class="col-md-6">
+                                    <div class="card social-account-card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="fab fa-youtube fa-2x text-danger me-3"></i>
+                                                <h5 class="card-title mb-0">YouTube</h5>
+                                            </div>
+                                            {% if youtube_account %}
+                                                <p class="text-muted mb-3">Connected as {{ youtube_account.name }}</p>
+                                                <a href="{% url 'social:disconnect' 'youtube' %}" class="btn btn-outline-danger">Disconnect</a>
+                                            {% else %}
+                                                <p class="text-muted mb-3">Not connected</p>
+                                                <a href="{% url 'social:begin' 'youtube' %}" class="btn btn-outline-primary">Connect</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="tab-pane fade" id="preferences">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Preferences</h3>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <h5>Notifications</h5>
+                                    <div class="form-check mb-2">
+                                        <input type="checkbox" class="form-check-input" id="email_notifications" name="email_notifications" {% if user.profile.email_notifications %}checked{% endif %}>
+                                        <label class="form-check-label" for="email_notifications">Email Notifications</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input type="checkbox" class="form-check-input" id="content_alerts" name="content_alerts" {% if user.profile.content_alerts %}checked{% endif %}>
+                                        <label class="form-check-label" for="content_alerts">Content Alerts</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input type="checkbox" class="form-check-input" id="performance_reports" name="performance_reports" {% if user.profile.performance_reports %}checked{% endif %}>
+                                        <label class="form-check-label" for="performance_reports">Weekly Performance Reports</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>Content Preferences</h5>
+                                    <div class="mb-3">
+                                        <label for="default_platform" class="form-label">Default Platform</label>
+                                        <select class="form-select" id="default_platform" name="default_platform">
+                                            <option value="">Select Platform</option>
+                                            <option value="facebook" {% if user.profile.default_platform == 'facebook' %}selected{% endif %}>Facebook</option>
+                                            <option value="instagram" {% if user.profile.default_platform == 'instagram' %}selected{% endif %}>Instagram</option>
+                                            <option value="tiktok" {% if user.profile.default_platform == 'tiktok' %}selected{% endif %}>TikTok</option>
+                                            <option value="youtube" {% if user.profile.default_platform == 'youtube' %}selected{% endif %}>YouTube</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="content_language" class="form-label">Content Language</label>
+                                        <select class="form-select" id="content_language" name="content_language">
+                                            <option value="en" {% if user.profile.content_language == 'en' %}selected{% endif %}>English</option>
+                                            <option value="es" {% if user.profile.content_language == 'es' %}selected{% endif %}>Spanish</option>
+                                            <option value="fr" {% if user.profile.content_language == 'fr' %}selected{% endif %}>French</option>
+                                            <option value="de" {% if user.profile.content_language == 'de' %}selected{% endif %}>German</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Save Preferences</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="tab-pane fade" id="security">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Security Settings</h3>
+                            
+                            <!-- Change Password -->
+                            <div class="mb-4">
+                                <h5>Password</h5>
+                                <p class="text-muted">Change your account password</p>
+                                <a href="{% url 'users:password_change' %}" class="btn btn-outline-primary">Change Password</a>
+                            </div>
+
+                            <!-- Two-Factor Authentication -->
+                            <div class="mb-4">
+                                <h5>Two-Factor Authentication</h5>
+                                <p class="text-muted">Add an extra layer of security to your account</p>
+                                {% if user.profile.two_factor_enabled %}
+                                    <button class="btn btn-outline-danger">Disable 2FA</button>
+                                {% else %}
+                                    <button class="btn btn-outline-success">Enable 2FA</button>
+                                {% endif %}
+                            </div>
+
+                            <!-- Active Sessions -->
+                            <div class="mb-4">
+                                <h5>Active Sessions</h5>
+                                <p class="text-muted">Manage your active login sessions</p>
+                                <div class="list-group">
+                                    {% for session in active_sessions %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">{{ session.device }}</h6>
+                                                <small class="text-muted">{{ session.location }} - Last active {{ session.last_active }}</small>
+                                            </div>
+                                            {% if session.is_current %}
+                                                <span class="badge bg-primary">Current Session</span>
+                                            {% else %}
+                                                <button class="btn btn-sm btn-outline-danger">Terminate</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Account Deletion -->
+                            <div>
+                                <h5>Delete Account</h5>
+                                <p class="text-muted">Permanently delete your account and all associated data</p>
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                <form method="post" action="{% url 'users:delete_account' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Enter your password to confirm</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,119 @@
+{% extends 'content/base_content.html' %}
+{% load static %}
+
+{% block content_title %}Publish Content{% endblock %}
+
+{% block page_title %}Publish Content{% endblock %}
+
+{% block content_body %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">Confirm Publication</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Ready to Publish!</h4>
+                    <p class="mb-0">You are about to publish this content. Once published, it will be visible to your audience.</p>
+                </div>
+
+                <!-- Content Preview -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ content.title }}</h5>
+                        {% if content.description %}
+                        <p class="card-text text-muted">{{ content.description }}</p>
+                        {% endif %}
+                        {% if content.media_file %}
+                        <div class="mb-3">
+                            {% if content.media_file.name|lower|slice:"-4:" in '.jpg,.png,.gif'|split:',' %}
+                            <img src="{{ content.media_file.url }}" class="img-fluid" alt="{{ content.title }}">
+                            {% else %}
+                            <video src="{{ content.media_file.url }}" class="img-fluid" controls></video>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <p class="card-text">{{ content.content|truncatewords:50 }}</p>
+                    </div>
+                </div>
+
+                <!-- Content Details -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Content Information</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Platform:</strong> {{ content.get_platform_display }}</li>
+                            <li><strong>Status:</strong> <span class="badge bg-{{ content.status }}">{{ content.get_status_display }}</span></li>
+                            <li><strong>Created:</strong> {{ content.created_at|date:"M d, Y H:i" }}</li>
+                            {% if content.scheduled_date %}
+                            <li><strong>Scheduled:</strong> {{ content.scheduled_date|date:"M d, Y H:i" }}</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Publication Impact</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success"></i> Content will be immediately visible</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Will be accessible to your audience</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Can be shared and engaged with</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Analytics will begin tracking</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Platform-Specific Requirements -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">Platform Requirements</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if content.platform == 'instagram' %}
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading"><i class="fab fa-instagram"></i> Instagram Requirements</h6>
+                            <ul class="mb-0">
+                                <li>Image resolution: Minimum 1080x1080 pixels</li>
+                                <li>File size: Maximum 10MB</li>
+                                <li>Supported formats: JPEG, PNG</li>
+                                <li>Video length: Maximum 60 seconds</li>
+                            </ul>
+                        </div>
+                        {% elif content.platform == 'tiktok' %}
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading"><i class="fab fa-tiktok"></i> TikTok Requirements</h6>
+                            <ul class="mb-0">
+                                <li>Video length: 15-60 seconds</li>
+                                <li>File size: Maximum 10MB</li>
+                                <li>Supported formats: MP4, MOV</li>
+                                <li>Resolution: 1080x1920 pixels (vertical)</li>
+                            </ul>
+                        </div>
+                        {% elif content.platform == 'facebook' %}
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading"><i class="fab fa-facebook"></i> Facebook Requirements</h6>
+                            <ul class="mb-0">
+                                <li>Image resolution: Minimum 1200x630 pixels</li>
+                                <li>File size: Maximum 10MB</li>
+                                <li>Supported formats: JPEG, PNG, GIF</li>
+                                <li>Video length: Maximum 240 minutes</li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Confirmation Form -->
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'content:content_detail' content.pk %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> Publish Content
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

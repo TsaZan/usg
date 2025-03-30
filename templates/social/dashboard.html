@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Social Media Dashboard - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Social Media Dashboard</h1>
+            <p class="text-muted">Manage your social media connections and content</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addConnectionModal">
+                <i class="fas fa-plus"></i> Add Connection
+            </button>
+        </div>
+    </div>
+
+    <!-- Social Media Connections -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fab fa-instagram fa-2x text-primary me-3"></i>
+                        <h5 class="card-title mb-0">Instagram</h5>
+                    </div>
+                    <p class="card-text">Connect your Instagram account to manage posts and stories.</p>
+                    <button class="btn btn-outline-primary">Connect</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fab fa-tiktok fa-2x text-primary me-3"></i>
+                        <h5 class="card-title mb-0">TikTok</h5>
+                    </div>
+                    <p class="card-text">Connect your TikTok account to manage videos and trends.</p>
+                    <button class="btn btn-outline-primary">Connect</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fab fa-facebook fa-2x text-primary me-3"></i>
+                        <h5 class="card-title mb-0">Facebook</h5>
+                    </div>
+                    <p class="card-text">Connect your Facebook account to manage posts and pages.</p>
+                    <button class="btn btn-outline-primary">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>Action</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fab fa-instagram text-primary"></i> Instagram</td>
+                                    <td>Post Published</td>
+                                    <td><span class="badge bg-success">Success</span></td>
+                                    <td>2 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fab fa-tiktok text-primary"></i> TikTok</td>
+                                    <td>Video Upload</td>
+                                    <td><span class="badge bg-success">Success</span></td>
+                                    <td>5 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fab fa-facebook text-primary"></i> Facebook</td>
+                                    <td>Page Update</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>1 day ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Connection Modal -->
+<div class="modal fade" id="addConnectionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Social Media Connection</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Platform</label>
+                        <select class="form-select">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Account Name</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Access Token</label>
+                        <input type="password" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Connect</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

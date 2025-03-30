@@ -1,0 +1,118 @@
+{% extends 'content/base_content.html' %}
+{% load static %}
+
+{% block content_title %}{% if tag %}Edit{% else %}Create{% endif %} Tag{% endblock %}
+
+{% block page_title %}{% if tag %}Edit{% else %}Create{% endif %} Tag{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.name.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Choose a clear and concise name for your tag. Use lowercase letters and hyphens for spaces.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'content:tag_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">{% if tag %}Update{% else %}Create{% endif %} Tag</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Tag Guidelines Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Tag Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <h6>Naming Conventions</h6>
+                <ul class="list-unstyled mb-3">
+                    <li><i class="fas fa-check text-success"></i> Use lowercase letters</li>
+                    <li><i class="fas fa-check text-success"></i> Use hyphens for spaces</li>
+                    <li><i class="fas fa-check text-success"></i> Keep names under 50 characters</li>
+                    <li><i class="fas fa-check text-success"></i> Avoid special characters</li>
+                </ul>
+
+                <h6>Examples</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary">product-launch</span>
+                    <span class="badge bg-primary">how-to-guide</span>
+                    <span class="badge bg-primary">feature-update</span>
+                    <span class="badge bg-primary">bug-fix</span>
+                    <span class="badge bg-primary">user-story</span>
+                    <span class="badge bg-primary">tutorial</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tag Benefits Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Benefits of Tagging</h5>
+            </div>
+            <div class="card-body">
+                <h6>Organization</h6>
+                <ul class="list-unstyled mb-3">
+                    <li><i class="fas fa-check-circle text-success"></i> Better content organization</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Easier content discovery</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Improved content management</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Better content filtering</li>
+                </ul>
+
+                <h6>Analytics</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-chart-line text-primary"></i> Track content performance</li>
+                    <li><i class="fas fa-chart-line text-primary"></i> Identify popular topics</li>
+                    <li><i class="fas fa-chart-line text-primary"></i> Measure engagement</li>
+                    <li><i class="fas fa-chart-line text-primary"></i> Analyze content trends</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-format tag name
+    document.addEventListener('DOMContentLoaded', function() {
+        const nameInput = document.getElementById('{{ form.name.id_for_label }}');
+        nameInput.addEventListener('input', function(e) {
+            // Convert to lowercase
+            this.value = this.value.toLowerCase();
+            // Replace spaces with hyphens
+            this.value = this.value.replace(/\s+/g, '-');
+            // Remove special characters except hyphens
+            this.value = this.value.replace(/[^a-z0-9-]/g, '');
+        });
+    });
+</script>
+{% endblock %} 

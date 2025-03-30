@@ -1,0 +1,236 @@
+{% extends 'content/base_content.html' %}
+{% load static %}
+
+{% block content_title %}{% if content %}Edit{% else %}Create{% endif %} Content{% endblock %}
+
+{% block page_title %}{% if content %}Edit{% else %}Create{% endif %} Content{% endblock %}
+
+{% block content_body %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.title.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.description.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Content -->
+                    <div class="mb-3">
+                        <label for="{{ form.content.id_for_label }}" class="form-label">Content</label>
+                        {{ form.content }}
+                        {% if form.content.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.content.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Platform -->
+                    <div class="mb-3">
+                        <label for="{{ form.platform.id_for_label }}" class="form-label">Platform</label>
+                        {{ form.platform }}
+                        {% if form.platform.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.platform.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.category.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="mb-3">
+                        <label for="{{ form.tags.id_for_label }}" class="form-label">Tags</label>
+                        {{ form.tags }}
+                        {% if form.tags.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.tags.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Media File -->
+                    <div class="mb-3">
+                        <label for="{{ form.media_file.id_for_label }}" class="form-label">Media File</label>
+                        {{ form.media_file }}
+                        {% if form.media_file.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.media_file.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if content and content.media_file %}
+                        <div class="mt-2">
+                            <small class="text-muted">Current file: {{ content.media_file.name }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Scheduled Date -->
+                    <div class="mb-3">
+                        <label for="{{ form.scheduled_date.id_for_label }}" class="form-label">Schedule Date</label>
+                        {{ form.scheduled_date }}
+                        {% if form.scheduled_date.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.scheduled_date.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'content:content_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">{% if content %}Update{% else %}Create{% endif %} Content</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Preview Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Preview</h5>
+            </div>
+            <div class="card-body">
+                <div id="preview-title" class="h5 mb-3"></div>
+                <div id="preview-description" class="text-muted mb-3"></div>
+                <div id="preview-content" class="mb-3"></div>
+                <div id="preview-media" class="mb-3"></div>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Help</h5>
+            </div>
+            <div class="card-body">
+                <h6>Content Guidelines</h6>
+                <ul class="list-unstyled mb-3">
+                    <li><i class="fas fa-check-circle text-success"></i> Keep titles concise and descriptive</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Use relevant tags for better organization</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Optimize media files before upload</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Schedule posts for optimal engagement</li>
+                </ul>
+
+                <h6>Platform Requirements</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fab fa-instagram"></i> Instagram: Images up to 10MB</li>
+                    <li><i class="fab fa-tiktok"></i> TikTok: Videos up to 10MB</li>
+                    <li><i class="fab fa-facebook"></i> Facebook: Images and videos up to 10MB</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Live preview
+    document.addEventListener('DOMContentLoaded', function() {
+        const titleInput = document.getElementById('{{ form.title.id_for_label }}');
+        const descriptionInput = document.getElementById('{{ form.description.id_for_label }}');
+        const contentInput = document.getElementById('{{ form.content.id_for_label }}');
+        const mediaInput = document.getElementById('{{ form.media_file.id_for_label }}');
+
+        function updatePreview() {
+            document.getElementById('preview-title').textContent = titleInput.value || 'Title Preview';
+            document.getElementById('preview-description').textContent = descriptionInput.value || 'Description preview...';
+            document.getElementById('preview-content').textContent = contentInput.value || 'Content preview...';
+            
+            if (mediaInput.files && mediaInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewMedia = document.getElementById('preview-media');
+                    if (mediaInput.files[0].type.startsWith('image/')) {
+                        previewMedia.innerHTML = `<img src="${e.target.result}" class="img-fluid" alt="Preview">`;
+                    } else if (mediaInput.files[0].type.startsWith('video/')) {
+                        previewMedia.innerHTML = `<video src="${e.target.result}" class="img-fluid" controls></video>`;
+                    }
+                }
+                reader.readAsDataURL(mediaInput.files[0]);
+            }
+        }
+
+        titleInput.addEventListener('input', updatePreview);
+        descriptionInput.addEventListener('input', updatePreview);
+        contentInput.addEventListener('input', updatePreview);
+        mediaInput.addEventListener('change', updatePreview);
+
+        // Initialize preview with existing content
+        if (titleInput.value || descriptionInput.value || contentInput.value) {
+            updatePreview();
+        }
+    });
+</script>
+{% endblock %} 
