@@ -1,28 +1,21 @@
-# Use Python 3.12 slim image
-FROM python:3.12-slim
+# Start from the official Python image
+FROM python:3.10-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set work directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies
-COPY requirements.txt .
+# Copy the requirements file and install dependencies
+COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
-COPY . .
+# Copy the Django application code
+COPY . /app/
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Expose the port that the app will run on
+EXPOSE 8080
 
-# Run gunicorn
-CMD ["gunicorn", "ugc_platform.wsgi:application", "--bind", "0.0.0.0:8080"] 
+# Command to run the app (e.g., using Gunicorn)
+CMD ["gunicorn", "ugc_platform.wsgi:application", "--bind", "0.0.0.0:8080"]
