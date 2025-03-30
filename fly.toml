@@ -7,6 +7,9 @@ primary_region = "lhr"  # London region, change as needed
 [env]
   PYTHONUNBUFFERED = "1"
   DJANGO_SETTINGS_MODULE = "ugc_platform.settings.production"
+  # Добавете DATABASE_URL или други необходими променливи за базата данни
+  DATABASE_URL = "postgres://username:password@localhost:5432/dbname"
+  # Настройте други необходими променливи, като SECRET_KEY и т.н.
 
 [deploy]
   strategy = "rolling"
@@ -73,4 +76,4 @@ primary_region = "lhr"  # London region, change as needed
 
 [metrics]
   port = 9091
-  path = "/metrics" 
+  path = "/metrics"
